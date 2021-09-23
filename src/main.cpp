@@ -1,13 +1,36 @@
 #include <stdio.h>
 #include <curl/curl.h>
-#include <iostream>
+// #include <iostream>
+#include <algorithm>
+#include <cctype>
 #include <string>
+#include <regex>
 
 bool debug = false;
+bool follow = true;
 bool silent = false;
+bool help = false;
 int spam_times = 0;
 
+// I am an epic fail for not making this work - azzo
+// std::string user_agent;
+// std::string auth;
+
+// debug prefix
+std::string debug_prefix = "[D]";
+const char *prefix = debug_prefix.c_str();
+
 static std::string readBuffer;
+
+bool whitespace(std::string s)
+{
+    if (s.empty())
+    {
+        return true;
+    }
+
+    return false;
+}
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
@@ -15,10 +38,24 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
     return size * nmemb;
 }
 
+void eraseAllSS(std::string &mainStr, const std::string &toErase)
+{
+    size_t pos = std::string::npos;
+    while ((pos = mainStr.find(toErase)) != std::string::npos)
+    {
+        mainStr.erase(pos, toErase.length());
+    }
+}
+
 int main(int argc, char **argv)
 {
     for (int i = 0; i < argc; i++)
     {
+        if (std::string(argv[i]) == "--help")
+        {
+            help = true;
+        }
+
         if (std::string(argv[i]) == "--debug")
         {
             debug = true;
@@ -29,7 +66,7 @@ int main(int argc, char **argv)
             silent = true;
         }
 
-        if (std::string(argv[i]) == "--spam")
+        if (std::string(argv[i]) == "--flood")
         {
             if (atoi(argv[i + 1]) > 1)
                 spam_times = atoi(argv[i + 1]);
@@ -37,17 +74,38 @@ int main(int argc, char **argv)
                 spam_times = 0;
         }
 
-        // if (std::string(argv[i]) == "--agent")
-        // {
-        //     do
-        //     {
+        if (std::string(argv[i]) == "--follow")
+        {
+            int v = argc;
+            if (v++ < argc)
+                if (atoi(argv[i + 1]) == 0)
+                    follow = false;
+                else
+                    follow = true;
+        }
+    }
 
-        //     }
-        // }
+    if (help)
+    {
+        printf(
+            "Usage: <url> [arguments]\n\n"
+            "Argument list:\n"
+            "\t--debug\t\t\tPrint debug information.\n"
+            "\t--silent\t\tDoesn't output result returned. (Works well with --debug)\n"
+            "\t--flood <times>\t\tFlood enter request the url <times> times\n"
+            "\t--follow <0/1>\t\tFollow the link chain. (0 for don't follow, 1 for follow\n"
+            "\t--help\t\t\tPrint this help message.\n"
+            "\n"
+            "");
+
+        return 0;
     }
 
     if (debug)
-        printf("-- D -- cppofetch started\n");
+    {
+        printf("%s CPPFetch started\n", prefix);
+        printf("%s Debug boolean is on\n", prefix);
+    }
 
     CURL *curl;
     struct curl_slist *headers = NULL;
@@ -57,33 +115,71 @@ int main(int argc, char **argv)
     if (curl)
     {
         if (debug)
-            printf("-- D -- fetching %s\n", argv[1]);
-        curl_easy_setopt(curl, CURLOPT_URL, argv[1]);
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+            printf("%s Fetching link %s\n", prefix, argv[1]);
 
-        if (spam_times > 1)
+        if (debug && follow)
         {
-            for (int i = 0; i < spam_times; i++)
-            {
-                curl_easy_perform(curl);
-                if (!silent)
-                    printf("%s\n", readBuffer.c_str());
-            }
+            printf("%s Follow location boolean set to %d\n", prefix, follow);
+            curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         }
 
-        curl_easy_perform(curl);
+        else
+        {
+            curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 0L);
+        }
+
+        curl_easy_setopt(curl, CURLOPT_URL, argv[1]);
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, follow);
+
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+
+        if (1 > spam_times)
+            curl_easy_perform(curl);
+
+        if (debug && silent)
+            printf("%s Silent boolean set to %d\n", prefix, silent);
 
         if (!silent)
+        {
             printf("%s\n", readBuffer.c_str());
+        }
 
-        if (debug)
+        if (debug && !(spam_times > 1))
         {
             long http_code = 0;
             curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-            printf("-- D -- status code %ld\n", http_code);
+            printf("%s Result returned status code %ld\n", prefix, http_code);
+        }
+
+        if (spam_times > 1)
+        {
+            if (debug)
+                printf("%s Flood times integer set to %d\n", prefix, spam_times);
+
+            for (int i = 0; i < spam_times; i++)
+            {
+                curl_easy_perform(curl);
+
+                if (!silent)
+                    printf("%s\n", readBuffer.c_str());
+
+                if (debug)
+                {
+                    long http_code = 0;
+                    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+                    printf("%s Result returned status code %ld\n", prefix, http_code);
+                }
+            }
         }
 
         curl_easy_cleanup(curl);
