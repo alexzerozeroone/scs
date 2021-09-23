@@ -1,6 +1,7 @@
 # Some CURL Spammer
 
 This repository contains the source code to `scs`
+Name inspired after center-feature, flooding.
 
 # Building
 
