@@ -153,9 +153,6 @@ int main(int argc, char **argv)
             return 1;
         }
 
-        if (debug)
-            printf("%s Fetching link %s\n", prefix, argv[1]);
-
         if (debug && follow)
         {
             printf("%s Follow location boolean set to %d\n", prefix, follow);
@@ -164,10 +161,25 @@ int main(int argc, char **argv)
 
         else
         {
+            follow = 0L;
+            if (debug)
+                printf("%s Follow location boolean set to %d\n", prefix, follow);
             curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 0L);
         }
 
-        curl_easy_setopt(curl, CURLOPT_URL, argv[1]);
+        if (debug && silent)
+            printf("%s Silent boolean set to %d\n", prefix, silent);
+
+        if (!whitespace(method) && debug)
+            printf("%s Request method string set to %s\n", prefix, method.c_str());
+
+        if (debug && spam_times > 1)
+            printf("%s Flood times integer set to %d\n", prefix, spam_times);
+
+        if (debug)
+            printf("%s Fetching link %s\n", prefix, url.c_str());
+
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, follow);
 
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
@@ -184,21 +196,16 @@ int main(int argc, char **argv)
 
         curl_easy_setopt(curl, CURLOPT_USERAGENT, "scs/1.2.3.4");
 
-        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method);
+        if (!whitespace(method))
+            curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.c_str());
 
         if (1 > spam_times)
             curl_easy_perform(curl);
-
-        if (debug && silent)
-            printf("%s Silent boolean set to %d\n", prefix, silent);
 
         if (!silent)
         {
             printf("%s", readBuffer.c_str());
         }
-
-        if (!whitespace(method) && debug)
-            printf("%s Request method string set to %s\n", prefix, method.c_str());
 
         long http_code = 0;
         double elapsed;
@@ -218,8 +225,6 @@ int main(int argc, char **argv)
 
         if (spam_times > 1)
         {
-            if (debug)
-                printf("%s Flood times integer set to %d\n", prefix, spam_times);
 
             for (int i = 0; i < spam_times; i++)
             {
@@ -251,7 +256,8 @@ int main(int argc, char **argv)
         if (debug)
             printf("%s Time elapsed %f\n", prefix, elapsed);
 
-        printf("%s scs ended\n", prefix);
+        if (debug)
+            printf("%s scs ended\n", prefix);
         curl_easy_cleanup(curl);
     }
 
