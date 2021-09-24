@@ -49,6 +49,11 @@ void eraseAllSS(std::string &mainStr, const std::string &toErase)
 
 int main(int argc, char **argv)
 {
+    if (argc == 1) // no arguments
+    {
+        help = true;
+    }
+
     for (int i = 0; i < argc; i++)
     {
         if (std::string(argv[i]) == "--help")

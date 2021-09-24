@@ -5,7 +5,21 @@ Name inspired after center-feature, flooding.
 
 # Building
 
+## **NOTE: Run the code below based on your operating system and in the root folder (scs, not src)**
+
 Linux
+You can either build and link manually or use the build script
+The script is basically all the steps tied into one command line
+(If you only want the executable file and no linking, you should build manually)
+
+Build script
+
+````bash
+chmod +x build.sh
+./build.sh
+```
+
+Manually building
 
 ```bash
 mkdir build
@@ -13,6 +27,15 @@ cd src
 g++ main.cpp -l curl -o ../build/scs
 cd ../build
 ./scs --help
+````
+
+Manually Linux linking
+
+```bash
+# After building
+cd build
+sudo rm /usr/bin/scs -rf # This will ask after your password
+sudo cp ./scs /usr/bin/scs # This will not ask for your password again
 ```
 
 Windows
@@ -29,17 +52,6 @@ cd ../build
 
 ```bash
 g++ main.cpp -l curl && ./a.out <url> [arguments]
-```
-
-# Linking
-
-Currently I use a Linux solution I have made that I don't think it's the best but it's alright for now
-
-```bash
-# After building
-cd build
-rm /usr/bin/scs -rf
-sudo mv ./scs /usr/bin/scs # This will ask after your password
 ```
 
 # Pull requests
