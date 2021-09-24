@@ -56,7 +56,7 @@ g++ main.cpp -l curl && ./a.out <url> [arguments]
 
 # Pull requests
 
-Having a merged pull request will put you on the Supporter Wall and my eternal appreciation
+Having a merged pull request will put you on the Supporter Wall and will get my eternal appreciation
 
 # Supporter Wall
 
