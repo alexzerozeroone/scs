@@ -5,6 +5,7 @@
 #include <cctype>
 #include <string>
 #include <regex>
+#include <cstdlib>
 
 bool debug = false;
 bool follow = true;
@@ -49,6 +50,11 @@ void eraseAllSS(std::string &mainStr, const std::string &toErase)
         mainStr.erase(pos, toErase.length());
     }
 }
+
+// soon:tm:
+// void debugf(char *text, ...) {
+//     printf(text);
+// }
 
 // string to lower function
 std::string toLower(std::string s)
@@ -104,11 +110,6 @@ int main(int argc, char **argv)
             method = std::string(argv[i + 1]);
         }
 
-        if (toLower(std::string(argv[i])) == "--mime")
-        {
-            mime = std::string(argv[i + 1]);
-        }
-
         if (toLower(std::string(argv[i])) == "--url")
         {
             url = std::string(argv[i + 1]);
@@ -126,7 +127,6 @@ int main(int argc, char **argv)
             "\t--flood <times>\t\tFlood enter request the url <times> times\n"
             "\t--follow <0/1>\t\tFollow the link chain. (0 for don't follow, 1 for follow\n"
             "\t--method <method>\tSet the method to use. (e.g GET)\n"
-            "\t--mime <mime-type>\tSet the mime-type to use. (e.g application/json)\n"
             "\t--help\t\t\tPrint this help message.\n"
             "\n"
             "");
@@ -217,11 +217,12 @@ int main(int argc, char **argv)
             printf("%s Result returned status code %ld\n", prefix, http_code);
         }
 
-        if (http_code == 0)
-        {
-            if (debug)
-                printf("%s Host does not exist or an error occured\n", prefix);
-        }
+        // currently acting weird
+        // if (http_code == 0)
+        // {
+        //     if (debug)
+        //         printf("%s Host does not exist or an error occured\n", prefix);
+        // }
 
         if (spam_times > 1)
         {
@@ -240,7 +241,7 @@ int main(int argc, char **argv)
                     long http_code = 0;
                     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
                     printf("%s Result returned status code %ld\n", prefix, http_code);
-                    printf("%s Time elapsed %f\n", prefix, elapsed);
+                    printf("%s Time elapsed %fs\n", prefix, elapsed);
                 }
 
                 readBuffer = "";
@@ -253,8 +254,8 @@ int main(int argc, char **argv)
         //         printf("%s Connection timed out\n", prefix);
         // }
 
-        if (debug)
-            printf("%s Time elapsed %f\n", prefix, elapsed);
+        if (debug && spam_times < 1)
+            printf("%s Time elapsed %fs\n", prefix, elapsed);
 
         if (debug)
             printf("%s scs ended\n", prefix);
