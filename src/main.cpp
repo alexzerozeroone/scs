@@ -93,7 +93,7 @@ int main(int argc, char **argv)
     if (help)
     {
         printf(
-            "Usage: <url> [arguments]\n\n"
+            "Usage: scs <url> [arguments]\n\n"
             "Argument list:\n"
             "\t--debug\t\t\tPrint debug information.\n"
             "\t--silent\t\tDoesn't output result returned. (Works well with --debug)\n"
