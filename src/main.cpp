@@ -14,7 +14,6 @@ bool help = false;
 int spam_times = 0;
 std::string method = "GET";
 std::string url = "";
-std::string mime = "";
 
 // I am an epic fail for not making this work - azzo
 // std::string user_agent;

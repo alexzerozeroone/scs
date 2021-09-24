@@ -6,14 +6,15 @@ Name inspired after center-feature, flooding.
 # Building
 
 ## Requirements
+
 ```
-build-essential
+build-essential libcurl4-gnutls-dev
 ```
 
 To install the requirements type
 
 ```bash
-sudo apt install build-essential
+sudo apt-get install build-essential libcurl4-gnutls-dev
 ```
 
 ## **NOTE: Run the code below based on your operating system and in the root folder (scs, not src)**
@@ -38,7 +39,7 @@ cd src
 g++ main.cpp -l curl -o ../build/scs
 cd ../build
 ./scs --help
-````
+```
 
 Manually linking
 
