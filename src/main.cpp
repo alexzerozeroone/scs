@@ -159,11 +159,17 @@ int main(int argc, char **argv)
             printf("%s\n", readBuffer.c_str());
         }
 
+        long http_code = 0;
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+
         if (debug && !(spam_times > 1))
         {
-            long http_code = 0;
-            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
             printf("%s Result returned status code %ld\n", prefix, http_code);
+        }
+
+        if (http_code == 0)
+        {
+            printf("%s Host does not exist or an error occured\n", prefix);
         }
 
         if (spam_times > 1)
