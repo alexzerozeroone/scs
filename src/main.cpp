@@ -11,6 +11,9 @@ bool follow = true;
 bool silent = false;
 bool help = false;
 int spam_times = 0;
+std::string method = "GET";
+std::string url = "";
+std::string mime = "";
 
 // I am an epic fail for not making this work - azzo
 // std::string user_agent;
@@ -47,6 +50,13 @@ void eraseAllSS(std::string &mainStr, const std::string &toErase)
     }
 }
 
+// string to lower function
+std::string toLower(std::string s)
+{
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    return s;
+}
+
 int main(int argc, char **argv)
 {
     if (argc == 1) // no arguments
@@ -56,22 +66,22 @@ int main(int argc, char **argv)
 
     for (int i = 0; i < argc; i++)
     {
-        if (std::string(argv[i]) == "--help")
+        if (toLower(std::string(argv[i])) == "--help")
         {
             help = true;
         }
 
-        if (std::string(argv[i]) == "--debug")
+        if (toLower(std::string(argv[i])) == "--debug")
         {
             debug = true;
         }
 
-        if (std::string(argv[i]) == "--silent")
+        if (toLower(std::string(argv[i])) == "--silent")
         {
             silent = true;
         }
 
-        if (std::string(argv[i]) == "--flood")
+        if (toLower(std::string(argv[i])) == "--flood")
         {
             if (atoi(argv[i + 1]) > 1)
                 spam_times = atoi(argv[i + 1]);
@@ -79,7 +89,7 @@ int main(int argc, char **argv)
                 spam_times = 0;
         }
 
-        if (std::string(argv[i]) == "--follow")
+        if (toLower(std::string(argv[i])) == "--follow")
         {
             int v = argc;
             if (v++ < argc)
@@ -88,17 +98,35 @@ int main(int argc, char **argv)
                 else
                     follow = true;
         }
+
+        if (toLower(std::string(argv[i])) == "--method")
+        {
+            method = std::string(argv[i + 1]);
+        }
+
+        if (toLower(std::string(argv[i])) == "--mime")
+        {
+            mime = std::string(argv[i + 1]);
+        }
+
+        if (toLower(std::string(argv[i])) == "--url")
+        {
+            url = std::string(argv[i + 1]);
+        }
     }
 
     if (help)
     {
         printf(
-            "Usage: scs <url> [arguments]\n\n"
+            "Usage: scs [arguments]\n\n"
             "Argument list:\n"
+            "\t--url <url>\t\tSet the url to use. (OBLIGATORY)\n"
             "\t--debug\t\t\tPrint debug information.\n"
             "\t--silent\t\tDoesn't output result returned. (Works well with --debug)\n"
             "\t--flood <times>\t\tFlood enter request the url <times> times\n"
             "\t--follow <0/1>\t\tFollow the link chain. (0 for don't follow, 1 for follow\n"
+            "\t--method <method>\tSet the method to use. (e.g GET)\n"
+            "\t--mime <mime-type>\tSet the mime-type to use. (e.g application/json)\n"
             "\t--help\t\t\tPrint this help message.\n"
             "\n"
             "");
@@ -108,17 +136,23 @@ int main(int argc, char **argv)
 
     if (debug)
     {
-        printf("%s CPPFetch started\n", prefix);
+        printf("%s scs started\n", prefix);
         printf("%s Debug boolean is on\n", prefix);
     }
 
     CURL *curl;
-    struct curl_slist *headers = NULL;
+    // struct curl_slist *headers = NULL;
     // CURLcode res;
     curl = curl_easy_init();
 
     if (curl)
     {
+        if (whitespace(url))
+        {
+            printf("%s No URL specified\n", prefix);
+            return 1;
+        }
+
         if (debug)
             printf("%s Fetching link %s\n", prefix, argv[1]);
 
@@ -139,7 +173,7 @@ int main(int argc, char **argv)
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
 
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        // curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
@@ -147,6 +181,10 @@ int main(int argc, char **argv)
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "scs/1.2.3.4");
+
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method);
 
         if (1 > spam_times)
             curl_easy_perform(curl);
@@ -156,11 +194,16 @@ int main(int argc, char **argv)
 
         if (!silent)
         {
-            printf("%s\n", readBuffer.c_str());
+            printf("%s", readBuffer.c_str());
         }
 
+        if (!whitespace(method) && debug)
+            printf("%s Request method string set to %s\n", prefix, method.c_str());
+
         long http_code = 0;
+        double elapsed;
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+        curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
 
         if (debug && !(spam_times > 1))
         {
@@ -169,7 +212,8 @@ int main(int argc, char **argv)
 
         if (http_code == 0)
         {
-            printf("%s Host does not exist or an error occured\n", prefix);
+            if (debug)
+                printf("%s Host does not exist or an error occured\n", prefix);
         }
 
         if (spam_times > 1)
@@ -180,6 +224,8 @@ int main(int argc, char **argv)
             for (int i = 0; i < spam_times; i++)
             {
                 curl_easy_perform(curl);
+                curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+                curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
 
                 if (!silent)
                     printf("%s\n", readBuffer.c_str());
@@ -189,10 +235,23 @@ int main(int argc, char **argv)
                     long http_code = 0;
                     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
                     printf("%s Result returned status code %ld\n", prefix, http_code);
+                    printf("%s Time elapsed %f\n", prefix, elapsed);
                 }
+
+                readBuffer = "";
             }
         }
 
+        // if (elapsed > 10)
+        // {
+        //     if (debug)
+        //         printf("%s Connection timed out\n", prefix);
+        // }
+
+        if (debug)
+            printf("%s Time elapsed %f\n", prefix, elapsed);
+
+        printf("%s scs ended\n", prefix);
         curl_easy_cleanup(curl);
     }
 
