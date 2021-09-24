@@ -14,7 +14,7 @@ The script is basically all the steps tied into one command line
 
 Build script
 
-````bash
+```bash
 chmod +x build.sh
 ./build.sh
 ```
