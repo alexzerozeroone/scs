@@ -8,13 +8,13 @@ Name inspired after center-feature, flooding.
 ## Requirements
 
 ```
-build-essential libcurl4-gnutls-dev
+build-essential libcurl-dev
 ```
 
 To install the requirements type
 
 ```bash
-sudo apt-get install build-essential libcurl4-gnutls-dev
+sudo apt-get install build-essential libcurl-dev
 ```
 
 ## **NOTE: Run the code below based on your operating system and in the root folder (scs, not src)**
