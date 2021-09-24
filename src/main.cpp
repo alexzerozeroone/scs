@@ -49,6 +49,11 @@ void eraseAllSS(std::string &mainStr, const std::string &toErase)
 
 int main(int argc, char **argv)
 {
+    if (argc == 1) // no arguments
+    {
+        help = true;
+    }
+
     for (int i = 0; i < argc; i++)
     {
         if (std::string(argv[i]) == "--help")
@@ -88,7 +93,7 @@ int main(int argc, char **argv)
     if (help)
     {
         printf(
-            "Usage: <url> [arguments]\n\n"
+            "Usage: scs <url> [arguments]\n\n"
             "Argument list:\n"
             "\t--debug\t\t\tPrint debug information.\n"
             "\t--silent\t\tDoesn't output result returned. (Works well with --debug)\n"
@@ -154,11 +159,17 @@ int main(int argc, char **argv)
             printf("%s\n", readBuffer.c_str());
         }
 
+        long http_code = 0;
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+
         if (debug && !(spam_times > 1))
         {
-            long http_code = 0;
-            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
             printf("%s Result returned status code %ld\n", prefix, http_code);
+        }
+
+        if (http_code == 0)
+        {
+            printf("%s Host does not exist or an error occured\n", prefix);
         }
 
         if (spam_times > 1)
