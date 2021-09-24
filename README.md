@@ -5,6 +5,17 @@ Name inspired after center-feature, flooding.
 
 # Building
 
+## Requirements
+```
+build-essential
+```
+
+To install the requirements type
+
+```bash
+sudo apt install build-essential
+```
+
 ## **NOTE: Run the code below based on your operating system and in the root folder (scs, not src)**
 
 Linux
@@ -29,23 +40,13 @@ cd ../build
 ./scs --help
 ````
 
-Manually Linux linking
+Manually linking
 
 ```bash
 # After building
 cd build
 sudo rm /usr/bin/scs -rf # This will ask after your password
 sudo cp ./scs /usr/bin/scs # This will not ask for your password again
-```
-
-Windows
-
-```bash
-mkdir build
-cd src
-g++ main.cpp -l curl -o ../build/scs
-cd ../build
-./scs.exe --help
 ```
 
 # Dev quick building
