@@ -2,10 +2,7 @@
 #include <curl/curl.h>
 // #include <iostream>
 #include <algorithm>
-#include <cctype>
 #include <string>
-#include <regex>
-#include <cstdlib>
 
 bool debug = false;
 bool follow = true;
@@ -225,10 +222,10 @@ int main(int argc, char **argv)
 
         if (spam_times > 1)
         {
-
             for (int i = 0; i < spam_times; i++)
             {
                 curl_easy_perform(curl);
+
                 curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
                 curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
 
