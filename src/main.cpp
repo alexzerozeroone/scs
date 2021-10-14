@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <curl/curl.h>
-// #include <iostream>
+// #include "iostream"
 #include <algorithm>
 #include <string>
 
@@ -8,7 +8,9 @@ bool debug = false;
 bool follow = true;
 bool silent = false;
 bool help = false;
+
 int spam_times = 0;
+
 std::string method = "GET";
 std::string url = "";
 
@@ -73,17 +75,17 @@ int main(int argc, char **argv)
             help = true;
         }
 
-        if (toLower(std::string(argv[i])) == "--debug")
+        else if (toLower(std::string(argv[i])) == "--debug")
         {
             debug = true;
         }
 
-        if (toLower(std::string(argv[i])) == "--silent")
+        else if (toLower(std::string(argv[i])) == "--silent")
         {
             silent = true;
         }
 
-        if (toLower(std::string(argv[i])) == "--flood")
+        else if (toLower(std::string(argv[i])) == "--flood")
         {
             if (atoi(argv[i + 1]) > 1)
                 spam_times = atoi(argv[i + 1]);
@@ -91,7 +93,7 @@ int main(int argc, char **argv)
                 spam_times = 0;
         }
 
-        if (toLower(std::string(argv[i])) == "--follow")
+        else if (toLower(std::string(argv[i])) == "--follow")
         {
             int v = argc;
             if (v++ < argc)
@@ -101,12 +103,12 @@ int main(int argc, char **argv)
                     follow = true;
         }
 
-        if (toLower(std::string(argv[i])) == "--method")
+        else if (toLower(std::string(argv[i])) == "--method")
         {
             method = std::string(argv[i + 1]);
         }
 
-        if (toLower(std::string(argv[i])) == "--url")
+        else if (toLower(std::string(argv[i])) == "--url")
         {
             url = std::string(argv[i + 1]);
         }

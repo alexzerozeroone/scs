@@ -1,6 +1,6 @@
 mkdir build
 cd src
-g++ main.cpp -l curl -o ../build/scs
+g++ main.cpp -lcurl -o ../build/scs
 cd ../build
 sudo rm /usr/bin/scs -rf
 sudo cp ./scs /usr/bin/scs

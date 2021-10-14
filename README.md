@@ -1,25 +1,35 @@
 # Some CURL Spammer
 
 This repository contains the source code to `scs`
+
 Name inspired after center-feature, flooding.
 
 # Building
 
 ## Requirements
 
-```
-build-essential libcurl-dev
-```
-
-To install the requirements type
+Debian-based
 
 ```bash
-sudo apt-get install build-essential libcurl-dev
+sudo apt-get install build-essential libcurl4-gnutls-dev libcurl4-ssl-dev
 ```
 
-## **NOTE: Run the code below based on your operating system and in the root folder (scs, not src)**
+Arch-based
 
-Linux
+```bash
+sudo pacman -Sy libcurl-compat base-devel
+```
+
+Fedora
+
+```bash
+sudo dnf install make automake gcc-c++ kernel-devel libcurl-devel
+```
+
+# **NOTE: Run the code below based on your operating system and in the root folder (scs, not src)**
+
+Linux:
+
 You can either build and link manually or use the build script
 The script is basically all the steps tied into one command line
 (If you only want the executable file and no linking, you should build manually)
@@ -46,14 +56,16 @@ Manually linking
 ```bash
 # After building
 cd build
-sudo rm /usr/bin/scs -rf # This will ask after your password
-sudo cp ./scs /usr/bin/scs # This will not ask for your password again
+sudo rm /usr/bin/scs -rf
+sudo cp ./scs /usr/bin/scs
 ```
 
 # Dev quick building
 
+This assumes you're in the source directory (not root directory).
+
 ```bash
-g++ main.cpp -l curl && ./a.out <url> [arguments]
+g++ main.cpp -l curl && ./a.out
 ```
 
 # Pull requests
