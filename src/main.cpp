@@ -119,7 +119,7 @@ int main(int argc, char **argv)
         printf(
             "Usage: scs [arguments]\n\n"
             "Argument list:\n"
-            "\t--url <url>\t\tSet the url to use. (OBLIGATORY)\n"
+            "\t--url <url>\t\tSet the url to use. (REQUIRED)\n"
             "\t--debug\t\t\tPrint debug information.\n"
             "\t--silent\t\tDoesn't output result returned. (Works well with --debug)\n"
             "\t--flood <times>\t\tFlood enter request the url <times> times\n"
