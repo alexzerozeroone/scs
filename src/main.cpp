@@ -1,3 +1,7 @@
+/*
+    https://github.com/p-ranav/argparse
+*/
+
 #include <stdio.h>
 #include <curl/curl.h>
 // #include "iostream"
@@ -19,7 +23,7 @@ std::string url = "";
 // std::string auth;
 
 // debug prefix
-std::string debug_prefix = "[D]";
+std::string debug_prefix = "//";
 const char *prefix = debug_prefix.c_str();
 
 static std::string readBuffer;
@@ -135,7 +139,7 @@ int main(int argc, char **argv)
     if (debug)
     {
         printf("%s scs started\n", prefix);
-        printf("%s Debug boolean is on\n", prefix);
+        printf("%s Debug boolean is 1\n", prefix);
     }
 
     CURL *curl;
