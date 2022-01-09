@@ -240,6 +240,7 @@ int main(int argc, char **argv)
                     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
                     printf("%s Result returned status code %ld\n", prefix, http_code);
                     printf("%s Time elapsed %fs\n", prefix, elapsed);
+                    printf("%d requests left\n", spam_times - i);
                 }
 
                 readBuffer = "";
