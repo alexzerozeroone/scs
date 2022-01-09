@@ -1,7 +1,3 @@
-/*
-    https://github.com/p-ranav/argparse
-*/
-
 #include <stdio.h>
 #include <curl/curl.h>
 // #include "iostream"
