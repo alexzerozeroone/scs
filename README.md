@@ -30,7 +30,8 @@ sudo dnf install make automake gcc-c++ kernel-devel libcurl-devel
 
 Linux:
 
-You can either build and link manually or use the build script The script is basically all the steps tied into one command line (If you only want the executable file and no linking, you should build manually)
+You can either build and link manually or use the build script 
+The script is basically all the steps tied into one command line (If you only want the executable file and no linking, you should build manually)
 
 Build script
 
